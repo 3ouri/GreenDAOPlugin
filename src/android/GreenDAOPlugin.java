@@ -1,76 +1,77 @@
-package com.ouri.plugins;
-
-import java.text.DateFormat;
-import java.util.Date;
+package com.eska.plugin;
 
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaPlugin;
+import org.json.JSONArray;
 import org.json.JSONException;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.widget.EditText;
-import de.greenrobot.daoexample.DaoMaster;
-import de.greenrobot.daoexample.DaoMaster.DevOpenHelper;
-import de.greenrobot.daoexample.DaoSession;
-import de.greenrobot.daoexample.Note;
-import de.greenrobot.daoexample.NoteDao;
 
-public class Plugin extends CordovaPlugin {
-      private SQLiteDatabase db;
-	    private EditText editText;
-	    private DaoMaster daoMaster;
-	    private DaoSession daoSession;
-	    private NoteDao noteDao;
-	    private Cursor cursor;
-	    public Plugin() {
-	    	 
-		  }
-	    
-	    @Override
-	    public boolean execute(String action, CordovaArgs args, CallbackContext callbackContext) throws JSONException {
-		      DevOpenHelper helper = new DaoMaster.DevOpenHelper(this.cordova.getActivity().getApplicationContext(), "cordavo-notes-db", null);
-	        db = helper.getWritableDatabase();
-	        daoMaster = new DaoMaster(db);
-	        daoSession = daoMaster.newSession();
-	        noteDao = daoSession.getNoteDao();
-		      System.out.println("hello");
-		      if ( action.equals("count"))
-		      {
-		
+import com.eska.lifeinsurancedao.DaoMaster;
+import com.eska.lifeinsurancedao.DaoMaster.DevOpenHelper;
+import com.eska.lifeinsurancedao.DaoSession;
+import com.eska.lifeinsurancedao.Product;
+import com.eska.lifeinsurancedao.ProductDao;
 
-	        String textColumn = NoteDao.Properties.Text.columnName;
-	        String orderBy = textColumn + " COLLATE LOCALIZED ASC";
-	        cursor = db.query(noteDao.getTablename(), noteDao.getAllColumns(), null, null, null, null, orderBy);
-	       // String[] from = { textColumn, NoteDao.Properties.Comment.columnName };
-	       // int[] to = { android.R.id.text1, android.R.id.text2 };
+public class GreenDAOPlugin extends CordovaPlugin {
 
-	        //cursor.getCount();
-	        callbackContext.success("hello"+ cursor.getCount());
+	public static final String ACTION_COUNT_FROM_DB = "countFromDB";
+	public static final String ACTION_ADD_TO_DB = "addToDB";
+
+	private SQLiteDatabase db;
+	private DaoMaster daoMaster;
+	private DaoSession daoSession;
+	private ProductDao productDao;
+	private Cursor cursor;
+
+	@Override
+	public boolean execute(String action, JSONArray args,
+			CallbackContext callbackContext) throws JSONException {
+		try {
+			DevOpenHelper helper = new DaoMaster.DevOpenHelper(this.cordova
+					.getActivity().getApplicationContext(), "cordavo-notes-db",
+					null);
+			db = helper.getWritableDatabase();
+			daoMaster = new DaoMaster(db);
+			daoSession = daoMaster.newSession();
+			productDao = daoSession.getProductDao();
+			System.out.println("hello");
+			if (action.equals(ACTION_COUNT_FROM_DB)) {
+				String textColumn = ProductDao.Properties.Product_Name.columnName;
+				String orderBy = textColumn + " COLLATE LOCALIZED ASC";
+				cursor = db.query(productDao.getTablename(),
+						productDao.getAllColumns(), null, null, null, null,
+						orderBy);
+				callbackContext.success("Done counting ... Count = "
+						+ cursor.getCount());
+			}
+			if (action.equals(ACTION_ADD_TO_DB)) {
+				Product product = new Product(
+						null,
+						"Life Credit Plan",
+						20,
+						65,
+						2,
+						49,
+						1,
+						1L,
+						70,
+						6,
+						"Is a type of term life insurance designed to pay off the balance due on a loan if the borrower dies before the loan is repaid. The face value of a credit life insurance policy decreases proportionately with an outstanding loan amount as the loan is paid off over time until both reach zero value. Credit life insurance can protect a person\'s dependents as it may also be required by some lenders.");
+				productDao.insert(product);
+				Log.d("DaoExample",
+						"Inserted new product, ID: " + product.getId());
+				callbackContext.success("Done Adding Product");
+			}
+			return true;
+
+		} catch (Exception e) {
+			System.err.println("Exception: " + e.getMessage());
+			callbackContext.error(e.getMessage());
+			return false;
 		}
-		if ( action.equals("add"))
-		{
-			 String noteText = "helloFromPage";
-		        //editText.setText("");
-
-		        final DateFormat df = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM);
-		        String comment = "Added on " + df.format(new Date());
-		        Note note = new Note(null, noteText, comment, new Date());
-		        noteDao.insert(note);
-		        Log.d("DaoExample", "Inserted new note, ID: " + note.getId());
-		        callbackContext.success("hello done adding");
-		       
-		}
-	       /* SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_2, cursor, from,
-	                to);
-	        setListAdapter(adapter);*/
-
-	        //editText = (EditText) findViewById(R.id.editTextNote);
-		
-		
-		return super.execute(action, args, callbackContext);
 	}
 
 }
