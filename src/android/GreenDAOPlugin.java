@@ -1,4 +1,4 @@
-package com.eska.plugin;
+package com.eska.greendao;
 
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
