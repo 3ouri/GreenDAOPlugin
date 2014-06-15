@@ -1,0 +1,23 @@
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+           id="com.eska.plugin"
+      version="0.1.0">
+    <name>GreenDAOPlugin</name>
+    <description>Green DAO Plugin - Database</description>
+    <license>1.0.0.0</license>
+    <keywords>phonegap</keywords>
+ 
+    <js-module src="www/greenDAOPlugin.js" name="GreenDAOPlugin">
+        <clobbers target="window.greendaoplugin" />
+    </js-module>
+ 
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="GreenDAOPlugin">
+                <param name="android-package" value="com.eska.plugin.GreenDAOPlugin"/>
+            </feature>
+        </config-file>
+ 
+        <source-file src="src/android/GreenDAOPlugin.java" target-dir="src/com/eska/plugin" />
+     </platform>
+</plugin> 
