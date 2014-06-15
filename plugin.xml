@@ -1,5 +1,5 @@
 <plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
-           id="com.eska.plugin"
+           id="com.eska.greendao"
       version="0.1.0">
     <name>GreenDAOPlugin</name>
     <description>Green DAO Plugin - Database</description>
@@ -14,10 +14,10 @@
     <platform name="android">
         <config-file target="res/xml/config.xml" parent="/*">
             <feature name="GreenDAOPlugin">
-                <param name="android-package" value="com.eska.plugin.GreenDAOPlugin"/>
+                <param name="android-package" value="com.eska.greendao.GreenDAOPlugin"/>
             </feature>
         </config-file>
  
-        <source-file src="src/android/GreenDAOPlugin.java" target-dir="src/com/eska/plugin" />
+        <source-file src="src/android/GreenDAOPlugin.java" target-dir="src/com/eska/greendao" />
      </platform>
 </plugin> 
